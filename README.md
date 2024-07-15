@@ -31,4 +31,5 @@ THEN I am prompted to select an employee to update and their new role and this i
 
 
 GitHub Url: https://github.com/amandeepsandhu13/employee_tracker_CMS
-Vedio link: 
+
+Video link: https://drive.google.com/file/d/1larHoBsy9BuWJ8QOfnAzx0cm7DQI7mZ_/view

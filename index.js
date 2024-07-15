@@ -2,12 +2,16 @@ const inquirer = require("inquirer");
 const db = require("./db/connection");
 const q = require("./db/queries");
 
+
+// Initialize the application
 init();
 
+// Function to initialize and load prompts
 function init() {
   loadPrompts();
 }
 
+// Function to load the main menu prompts
 function loadPrompts() {
   inquirer
     .prompt([
@@ -45,9 +49,13 @@ function loadPrompts() {
             value: "UPDATE_EMP_ROLE",
           },
           {
+            name: "update an employee manager",
+            value: "UPDATE_EMP_MANAGER",
+        },
+        {
             name: "Quit",
             value: "quit",
-          },
+        },
         ],
       },
     ])
@@ -75,8 +83,11 @@ function loadPrompts() {
         case "UPDATE_EMP_ROLE":
           updateEmpRole();
           break;
+          case "UPDATE_EMP_MANAGER":
+            updateEmpManager();
+            break;
         default:
-          quit();
+            quit();
       }
     })
     .catch((error) => {
@@ -89,6 +100,82 @@ function loadPrompts() {
       }
     });
 }
+
+//update employee role
+
+const updateEmpRole = async() => {
+    try{
+
+        const employees = await q.getEmployees();
+        const employeeChoices = employees.map(emp => ({
+            name: `${emp.first_name} ${emp.last_name}`,
+            value: emp.id,
+        }));
+        const { employeeId } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employeeId',
+                message: 'Select the employee to update:',
+                choices: employeeChoices,
+            },
+        ]);
+        const roles = await q.getAllRoles();
+        const roleChoices = roles.map(role => ({
+            name: role.title,
+            value: role.id,
+        }));
+
+        const { roleId } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'roleId',
+                message: 'Select the new role for the employee:',
+                choices: roleChoices,
+            },
+        ]);
+        await q.updateEmployeeRole(employeeId, roleId);
+        console.log(`Updated employee's role successfully`);
+        viewEmployees();
+
+    } catch(err){
+        console.log(err);
+    }
+};
+
+// update employee manager
+const updateEmpManager = async () => {
+    try {
+        const employees = await q.getEmployees();
+        const employeeChoices = employees.map(emp => ({
+            name: `${emp.first_name} ${emp.last_name}`,
+            value: emp.id,
+        }));
+
+        const { employeeId } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employeeId',
+                message: 'Select the employee to update manager:',
+                choices: employeeChoices,
+            },
+        ]);
+
+        const { managerId } = await inquirer.prompt([
+            {
+                type: 'list',
+                name: 'managerId',
+                message: 'Select the new manager for the employee:',
+                choices: [...employeeChoices, { name: 'None', value: null }],
+            },
+        ]);
+
+        await q.updateEmployeeManager(employeeId, managerId);
+        console.log(`Updated employee's manager successfully`);
+        viewEmployees();
+    } catch (err) {
+        console.log(err);
+    }
+};
 
 // add department
 
@@ -148,6 +235,7 @@ const viewAllRoles = async () => {
   }
 };
 
+// function to asdd new employee
 const addEmployee = async () => {
   try {
     const { firstName, lastName, roleId, managerId } = await inquirer.prompt([
@@ -191,12 +279,12 @@ const addEmployee = async () => {
     );
     const getEmployee = await q.getEmployees();
     console.table(getEmployee);
-    loadPrompts();
+    loadPrompts();     // Reload prompts after operation
   } catch (err) {
     console.log(err);
   }
 };
-
+// function to view all employees
 const viewEmployees = async () => {
     try {
         const employees = await q.getEmployees();

@@ -48,5 +48,15 @@ module.exports = {
             console.error(err);
             throw err;
         }
-    }
+    },
+
+    // Function to update employee's manager
+    updateEmployeeManager: async (employeeId, managerId) => {
+    const res = await pool.query(
+        'UPDATE employee SET manager_id = $1 WHERE id = $2',
+        [managerId, employeeId]
+    );
+    return res.rowCount;
+}
+    
 }

@@ -27,7 +27,7 @@ npm run seeds
 node index.js
 
 ### License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. 
 
 
 GitHub Url: https://github.com/amandeepsandhu13/employee_tracker_CMS
